@@ -28,7 +28,6 @@ function errorLog(error) {
 // 	return gulp.src([
 // 		'node_modules/bootstrap/scss/bootstrap.scss', 
 // 		'assets-dev/sass/*.scss'
-
 // 	])
 // 	.pipe(sassGlob())
 //     .pipe(sass())
