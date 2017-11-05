@@ -11,7 +11,11 @@ var gulp		= require('gulp'),
 	uglifycss 	= require('gulp-uglifycss');
 	prefix		= require('gulp-autoprefixer'),
 	concat		= require('gulp-concat'),
-	del 		= require('del');
+    // concat       = require('gulp-concat-sourcemap'), 
+    sourcemaps  = require('gulp-sourcemaps'),
+    livereload  = require('gulp-livereload'),
+    gutil       = require('gulp-util'),
+	del 		= require('del'),
 	browserSync	= require('browser-sync').create();
 
 function errorLog(error) {
@@ -30,8 +34,8 @@ function errorLog(error) {
 // 		'assets-dev/sass/*.scss'
 // 	])
 // 	.pipe(sassGlob())
-//     .pipe(sass())
-//     .on('error', errorLog)
+//  .pipe(sass())
+//  .on('error', errorLog)
 // 	.pipe(concat('theme.min.css'))
 // 	.pipe(prefix('last 2 versions'))
 // 	.pipe(uglifycss({
@@ -53,12 +57,13 @@ gulp.task('styles', function(){
 		'assets-dev/sass/*.scss'
 
 	])
-	.pipe(sassGlob())
+    .pipe(sassGlob())
     .pipe(sass())
     .on('error', errorLog)
-	.pipe(concat('theme.css'))
-	.pipe(prefix('last 2 versions'))
-	.pipe(gulp.dest("assets/css"))
+    .pipe(concat('theme.css'))
+    .pipe(prefix('last 2 versions'))
+    .pipe(gulp.dest("assets/css"))
+    .pipe(livereload());
 });
 
 /**
@@ -97,7 +102,8 @@ gulp.task('scripts', function(){
 	])
 	.on('error', errorLog)
 	.pipe(concat('theme.js'))
-	.pipe(gulp.dest("assets/js"));
+	.pipe(gulp.dest("assets/js"))
+    .pipe(livereload());
 });
 
 /**
@@ -106,8 +112,12 @@ gulp.task('scripts', function(){
  * before starting the watcher.
  */
 gulp.task('watch', ['styles', 'scripts'], function(){
-	gulp.watch(['node_modules/bootstrap/scss/bootstrap.scss', 'assets-dev/sass/**/*.scss', 'assets/css'], ['styles']);
+    livereload.listen();
+	gulp.watch(['node_modules/bootstrap/scss/bootstrap.scss', 'assets-dev/sass/**/*.scss', 'assets/css/'], ['styles']);
 	gulp.watch(['node_modules/bootstrap/dist/js/bootstrap.js', 'node_modules/jquery/dist/jquery.js', 'node_modules/tether/dist/js/tether.js', 'assets-dev/js/*.js', 'assets/js'], ['scripts']);
+    gulp.watch('*.php').on('change', function(file) {
+        livereload.changed(file.path);
+    });
 });
 
 /**
